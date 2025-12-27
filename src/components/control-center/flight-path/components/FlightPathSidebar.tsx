@@ -25,15 +25,15 @@ export function FlightPathSidebar({
   const getVolatilityDescription = (type: EngineType): string => {
     switch (type) {
       case EngineType.NUCLEAR:
-        return "High volatility: 1% - 35% annual returns";
+        return "High volatility: 20% - 50% annual returns";
       case EngineType.ELITE:
-        return "Moderate-high volatility: 3% - 25% annual returns";
+        return "Moderate-high volatility: 20% - 50% annual returns";
       case EngineType.STABILIZED:
-        return "Moderate volatility: 4% - 12% annual returns";
+        return "Moderate volatility: 20% - 50% annual returns";
       case EngineType.BASELINE:
-        return "Low volatility: 2% - 5% annual returns (consistent)";
+        return "Low volatility: 20% - 50% annual returns (consistent)";
       case EngineType.WIND_DEPENDENT:
-        return "High volatility: 0% - 20% annual returns";
+        return "High volatility: 20% - 50% annual returns";
       default:
         return "";
     }

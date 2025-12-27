@@ -162,6 +162,7 @@ export interface VolatileProjectionData {
   timeline: FlightLogEntry[];
   yearsToGoal: number | null;
   finalValue: number;
+  valueAtGoal: number | null; // Value when goal is reached
 }
 
 /**
@@ -177,52 +178,55 @@ export function calculateVolatileProjection(
   maxYears: number = 50
 ): VolatileProjectionData {
   const characteristics = getEngineTypeCharacteristics(engineType);
-  const baseYield = characteristics.defaultYield / 100; // Convert to decimal
   const defaultNavDrag = characteristics.defaultNavDrag;
   
   // Determine volatility based on engine type
-  // Higher yields = more volatile, lower yields = more consistent
+  // All engines now have 20% to 50% annual returns
   let volatilityRange: [number, number];
   let consistencyFactor: number; // How much the returns vary year to year
   
   switch (engineType) {
     case EngineType.NUCLEAR:
-      // Very high volatility: 1% to 35% annual returns
-      volatilityRange = [0.01, 0.35];
+      // High volatility: 20% to 50% annual returns
+      volatilityRange = [0.20, 0.50];
       consistencyFactor = 0.8; // High variation
       break;
     case EngineType.ELITE:
-      // High volatility: 3% to 25% annual returns
-      volatilityRange = [0.03, 0.25];
+      // Moderate-high volatility: 20% to 50% annual returns
+      volatilityRange = [0.20, 0.50];
       consistencyFactor = 0.6;
       break;
     case EngineType.STABILIZED:
-      // Moderate volatility: 4% to 12% annual returns
-      volatilityRange = [0.04, 0.12];
+      // Moderate volatility: 20% to 50% annual returns
+      volatilityRange = [0.20, 0.50];
       consistencyFactor = 0.3;
       break;
     case EngineType.BASELINE:
-      // Low volatility: 2% to 5% annual returns (very consistent)
-      volatilityRange = [0.02, 0.05];
+      // Low volatility: 20% to 50% annual returns (more consistent within range)
+      volatilityRange = [0.20, 0.50];
       consistencyFactor = 0.1;
       break;
     case EngineType.WIND_DEPENDENT:
-      // High volatility: 0% to 20% annual returns (wind dependent)
-      volatilityRange = [0.0, 0.20];
+      // High volatility: 20% to 50% annual returns (wind dependent)
+      volatilityRange = [0.20, 0.50];
       consistencyFactor = 0.7;
       break;
     default:
-      volatilityRange = [0.03, 0.10];
+      volatilityRange = [0.20, 0.50];
       consistencyFactor = 0.4;
   }
+  
+  // Use midpoint of volatility range as base return (35% for 20-50% range)
+  const baseYield = (volatilityRange[0] + volatilityRange[1]) / 2; // 0.35 (35%)
   
   const timeline: FlightLogEntry[] = [];
   let currentValue = initialInvestment;
   const monthlyDrag = defaultNavDrag / 12;
   
   const startDate = new Date();
-  let currentYearReturn = baseYield; // Start with base yield
+  let currentYearReturn = baseYield; // Start with midpoint of range
   let yearsToGoal: number | null = null;
+  let valueAtGoal: number | null = null;
   
   // Generate monthly data
   for (let month = 0; month <= maxYears * 12; month++) {
@@ -271,6 +275,7 @@ export function calculateVolatileProjection(
     // Check if we've reached the goal
     if (currentValue >= desiredGoal && yearsToGoal === null) {
       yearsToGoal = month / 12;
+      valueAtGoal = currentValue;
     }
   }
   
@@ -282,6 +287,7 @@ export function calculateVolatileProjection(
     timeline,
     yearsToGoal: yearsToGoal !== null ? Math.round(yearsToGoal * 10) / 10 : null,
     finalValue: currentValue,
+    valueAtGoal: valueAtGoal,
   };
 }
 

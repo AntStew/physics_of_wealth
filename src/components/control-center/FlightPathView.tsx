@@ -51,7 +51,7 @@ export function FlightPathView({ engines }: FlightPathViewProps) {
       {/* Main Content */}
       <div className="relative min-h-[600px]">
         {/* Fixed Sidebar - Desktop only */}
-        <div className="hidden md:block fixed left-0 top-32 md:top-36 bottom-0 w-80 z-10 pt-4 pl-4 overflow-hidden">
+        <div className="hidden md:block fixed left-0 top-24 md:top-28 bottom-0 w-80 z-10 pt-4 pl-4 overflow-hidden">
           <FlightPathSidebar
             initialInvestment={initialInvestment}
             monthlyInvestment={monthlyInvestment}

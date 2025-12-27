@@ -27,16 +27,24 @@ export function useFlightPathProjection({
   }, [initialInvestment, monthlyInvestment, engineType, desiredGoal]);
 
   // Format data for chart - show monthly data but sample for readability
+  // Stop at goal time if goal is reached
   const chartData = useMemo(() => {
-    const sampleRate = Math.max(1, Math.floor(projection.timeline.length / 200)); // Show max 200 points
-    return projection.timeline
-      .filter((_, index) => index % sampleRate === 0 || index === projection.timeline.length - 1)
+    // If goal is reached, only show data up to goal time
+    let timelineToShow = projection.timeline;
+    if (projection.yearsToGoal !== null) {
+      const monthsToGoal = Math.ceil(projection.yearsToGoal * 12);
+      timelineToShow = projection.timeline.slice(0, monthsToGoal + 1); // +1 to include the goal point
+    }
+    
+    const sampleRate = Math.max(1, Math.floor(timelineToShow.length / 200)); // Show max 200 points
+    return timelineToShow
+      .filter((_, index) => index % sampleRate === 0 || index === timelineToShow.length - 1)
       .map((entry) => ({
         date: new Date(entry.date).toLocaleDateString("en-US", { month: "short", year: "numeric" }),
         "Portfolio Value": Math.round(entry.actualWealth),
         "Goal": desiredGoal,
       }));
-  }, [projection.timeline, desiredGoal]);
+  }, [projection.timeline, projection.yearsToGoal, desiredGoal]);
 
   return {
     projection,

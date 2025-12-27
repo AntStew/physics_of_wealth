@@ -6,19 +6,25 @@ interface ProjectionMetricsProps {
 }
 
 export function ProjectionMetrics({ projection }: ProjectionMetricsProps) {
-  // Calculate money invested (initial + all monthly contributions over 50 years)
-  const totalMonths = 50 * 12; // 50 years
-  const moneyInvested = projection.initialInvestment + (projection.monthlyInvestment * totalMonths);
+  // Use goal time if available, otherwise use 50 years
+  const monthsToGoal = projection.yearsToGoal !== null 
+    ? Math.ceil(projection.yearsToGoal * 12) 
+    : 50 * 12;
   
-  // Calculate income gained (total value - money invested)
-  const incomeGained = projection.finalValue - moneyInvested;
+  // Calculate money invested up to goal time (initial + monthly contributions until goal)
+  const moneyInvested = projection.initialInvestment + (projection.monthlyInvestment * monthsToGoal);
   
-  // Calculate monthly growth percentage
-  // Using compound growth formula: monthly_growth = ((finalValue / moneyInvested) ^ (1/totalMonths)) - 1
-  const totalReturn = moneyInvested > 0 ? (projection.finalValue / moneyInvested) : 1;
-  const monthlyGrowth = totalReturn > 0 
-    ? ((Math.pow(totalReturn, 1 / totalMonths) - 1) * 100).toFixed(2)
-    : "0.00";
+  // Use value at goal time if available, otherwise use final value (50 years)
+  const valueAtGoal = projection.valueAtGoal !== null 
+    ? projection.valueAtGoal 
+    : projection.finalValue;
+  
+  // Calculate income gained (value at goal - money invested)
+  const incomeGained = valueAtGoal - moneyInvested;
+  
+  // Calculate total % growth
+  const totalReturn = moneyInvested > 0 ? (valueAtGoal / moneyInvested) : 1;
+  const totalGrowthPercent = ((totalReturn - 1) * 100).toFixed(2);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
@@ -79,7 +85,7 @@ export function ProjectionMetrics({ projection }: ProjectionMetricsProps) {
           ${(incomeGained / 1000).toFixed(0)}k
         </div>
         <div className="text-xs text-cyan-300/60">
-          {monthlyGrowth}% monthly growth
+          {totalGrowthPercent}% total growth
         </div>
       </div>
 
@@ -94,10 +100,12 @@ export function ProjectionMetrics({ projection }: ProjectionMetricsProps) {
           </h3>
         </div>
         <div className="text-2xl md:text-3xl font-bold text-cyan-300 mb-1">
-          ${(projection.finalValue / 1000).toFixed(0)}k
+          ${(valueAtGoal / 1000).toFixed(0)}k
         </div>
         <div className="text-xs text-cyan-300/60">
-          After 50 years
+          {projection.yearsToGoal !== null 
+            ? `At goal (${projection.yearsToGoal.toFixed(1)} years)`
+            : "After 50 years"}
         </div>
       </div>
     </div>

@@ -52,7 +52,7 @@ export function ProjectionChart({ chartData, engineType }: ProjectionChartProps)
             <Line
               type="monotone"
               dataKey="Portfolio Value"
-              stroke="#22c55e"
+              stroke="#60a5fa"
               strokeWidth={3}
               dot={false}
               name="Portfolio Value"
@@ -61,7 +61,7 @@ export function ProjectionChart({ chartData, engineType }: ProjectionChartProps)
             <Line
               type="monotone"
               dataKey="Goal"
-              stroke="#ef4444"
+              stroke="#2563eb"
               strokeWidth={2}
               strokeDasharray="5 5"
               dot={false}
@@ -74,14 +74,14 @@ export function ProjectionChart({ chartData, engineType }: ProjectionChartProps)
       <div className="mt-4 text-sm text-cyan-300/60 space-y-2">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <div className="w-4 h-0.5 bg-green-500"></div>
-            <span><strong>Green line:</strong> Portfolio value (projected growth)</span>
+            <div className="w-4 h-0.5 bg-blue-400"></div>
+            <span><strong>Light blue line:</strong> Portfolio value (projected growth)</span>
           </div>
         </div>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <div className="w-4 h-0.5 bg-red-500 border-dashed border-t-2"></div>
-            <span><strong>Red dashed line:</strong> Goal target</span>
+            <div className="w-4 h-0.5 bg-blue-600 border-dashed border-t-2"></div>
+            <span><strong>Dark blue dashed line:</strong> Goal target</span>
           </div>
         </div>
         <p className="mt-2 text-xs">
